@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:13
+    container_name: database
+    environment:
+      POSTGRES_USER: backenduser      # Use credentials matching backend config
+      POSTGRES_PASSWORD: backendpass  # Use credentials matching backend config
+      POSTGRES_DB: warehousedb        # Example DB name
+    volumes:
+      - ./dbfiles:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  warehouse:
+    build: .
+    container_name: warehouse
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DB_USER: backenduser            # Same credentials as DB container
+      DB_PASS: backendpass
+      DB_NAME: warehousedb
+    ports:
+      - "3000:3000"                  # Expose backend port to host
